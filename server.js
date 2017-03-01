@@ -5,11 +5,29 @@ var mongo = require("mongoose");
 var config = require("./config");
 
 var app = new express();
+app.use(bodyParser.json());
 
+//connection with mongodb
+mongo.connect(config.database, function (err) {
+
+    if (err) {
+        throw err;
+    } else {
+        console.log("Database connected!!");
+    }
+
+});
+
+//for send html file 
 app.get("/", function (req, res) {
 
-    res.sendFile(__dirname + "/views/index.html");
+    res.sendFile(__dirname + "/public/views/index.html");
 });
+
+var api = require("./routes/api")(express);
+
+app.use("/api", api)
+
 
 app.listen(config.port, function (err) {
 
