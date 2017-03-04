@@ -1,7 +1,24 @@
 var User = require("../modules/user");
 var mongo = require("mongoose");
+var config = require("../config");
+
+var jsonWebToken = require("jsonWebToken");
+
+var secretKey = config.secretKey;
 
 module.exports = function (express) {
+
+    function createToken(user) {
+
+        var token = jsonWebToken.sign({
+
+            _id: user._id,
+            name: user.name,
+            username: user.username
+        }, secretKey);
+
+        return token;
+    }
 
     var api = express.Router();
 
@@ -40,5 +57,35 @@ module.exports = function (express) {
             }
         })
     });
+
+    api.post("/login", function (req, res) {
+
+        User.findOne({ username: req.body.username }).select("password").exec(function (err, usernameFinded) {
+
+            if (err) {
+                throw err;
+            }
+
+            if (!usernameFinded) {
+                res.send("This user does not exist!!");
+            } else {
+
+                var validPassword = usernameFinded.comparePassword(req.body.password);
+
+                if (!validPassword) {
+                    res.send("The password is not correct!!");
+                } else {
+
+                    var token = createToken(usernameFinded);
+                    res.send({
+                        success: true,
+                        message: "Successfully login",
+                        token: token
+                    })
+                }
+            }
+        })
+    });
+
     return api;
 }
