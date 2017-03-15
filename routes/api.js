@@ -68,7 +68,6 @@ module.exports = function (express) {
             if (err) {
                 throw err;
             }
-
             if (!usernameFinded) {
                 res.send("This user does not exist!!");
             } else {
@@ -151,7 +150,7 @@ module.exports = function (express) {
     api.get("/me", function (req, res) {
 
         res.json(req.decoded);
-    })
+    });
 
     return api;
 }
