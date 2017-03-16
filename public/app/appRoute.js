@@ -1,5 +1,6 @@
 var myApp = angular.module("myApp", ["ngRoute"]);
 
+//module initial configuration for the route system
 myApp.config(function ($routeProvider) {
 
     $routeProvider.when("/", {
@@ -7,5 +8,6 @@ myApp.config(function ($routeProvider) {
         templateUrl: "/app/views/pages/home.html"
     })
 
-    .otherwise({ redirectTo: "/" });
+    //on other cases, redirect to "/"
+    erwise({ redirectTo: "/" });
 })
