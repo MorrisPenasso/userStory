@@ -9,5 +9,5 @@ myApp.config(function ($routeProvider) {
     })
 
     //on other cases, redirect to "/"
-    erwise({ redirectTo: "/" });
+    .otherwise({ redirectTo: "/" });
 })
