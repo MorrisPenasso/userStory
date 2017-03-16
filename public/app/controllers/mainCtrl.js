@@ -1,4 +1,4 @@
-var myApp = angular.module("myApp", ["Auth"]);
+var myApp = angular.module("mainModule", ["Auth"]);
 
 myApp.controller("mainCtrl", function ($scope, $location, Auth) {
 
