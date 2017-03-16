@@ -45,4 +45,29 @@ authService.factory("Auth", function ($http, $q, AuthToken) {
 
     return authFactory;
 
+});
+
+authService.factory("AuthToken", function ($window) {
+
+    var authFactory = {};
+
+    authFactory.setToken = function (token) {
+
+        if (token) {
+            $window.localStorage.setitem("token", token);
+        } else {
+            $window.localStorage.removeItem("token");
+        }
+    };
+
+    authFactory.getToken = function () {
+
+        return $window.localStorage.getItem("token");
+    };
+
+
+
+
+    return authFactory;
+
 })
