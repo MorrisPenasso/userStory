@@ -1,12 +1,9 @@
-var myApp = angular.module("mainModule", ["Auth"]);
+var mainCtrl = angular.module("mainCtrl", ["authService"]);
 
-myApp.controller("mainCtrl", function ($scope, $location, Auth) {
+//create a new controller and get "Auth" service
+mainCtrl.controller("mainController", function ($scope, $rootScope, $location, Auth, $window) {
 
-    //for control if the current user is already connected
-    $scope.isLoggedId = Auth.isLogged();
-
-
-    $scope.$on("$routeChangeStart", function () {
+    $rootScope.$on("$routeChangeStart", function () {
 
         $scope.loggedIn = Auth.isLogged();
 
@@ -15,28 +12,32 @@ myApp.controller("mainCtrl", function ($scope, $location, Auth) {
         });
     });
 
+    //for manage a login process
     $scope.doLogin = function () {
-
         $scope.processing = true;
 
-        Auth.login($scope.loginData.username, $scope.loginData.password).success(function (user) {
+        $scope.error = "";
+
+        Auth.login($scope.loginData.username, $scope.loginData.password).then(function (data) {
+
+            $scope.processing = false;
 
             Auth.getUser().then(function (data) {
-
-                $scope.user = user.data;
+                $scope.user = data.data;
             });
 
-            if (user.success) {
-                $location.path("/");
+            if (data.data.success) {
+                $window.location.href = "/";
             } else {
-                $scope.error = user.message;
-            };
-
-            $scope.logout = function () {
-
-                Auth.logout();
-                $location.path("/logout");
+                $scope.error = data.data.message;
             }
-        })
-    }
+        });
+    };
+
+    //for manage a logout process
+    $scope.logout = function () {
+
+        Auth.logout();
+        $location.path("/logout");
+    };
 })

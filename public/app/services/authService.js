@@ -1,78 +1,95 @@
-var authService = angular.module("authService", ["$http"]);
+var authService = angular.module("authService", []);
 
-//factory for manage authentication process
+//a service that contain all call to server for login, logout and for get information of current user logged
 authService.factory("Auth", function ($http, $q, AuthToken) {
 
     var authFactory = {};
 
-    //manage a login request
     authFactory.login = function (username, password) {
 
-        return $http.post("/api/login", {
-
-            username: username,
-            password: password
-        }).success(function (data) {
-            if (data.success == true) {
-                AuthToken.setToken(data.token);
-                return data;
+       return $http({
+            method: 'POST',
+            url: '/api/login',
+            data: {
+                username: username,
+                password: password
             }
+        }).then(function (user) {
+            AuthToken.setToken(user.data.token);
+            return user;
         })
     };
 
-    //manage a logout request
     authFactory.logout = function () {
-
         AuthToken.setToken();
+
     };
 
-    //if current user is logged
     authFactory.isLogged = function () {
 
         if (AuthToken.getToken()) {
-
             return true;
         } else {
             return false;
         }
     };
 
-    //for get a informations of the current user
     authFactory.getUser = function () {
-
-        if (AuthToken.getToken()) {
+        if (AuthToken.getToken) {
             return $http.get("/api/me");
         } else {
-            $q.reject({ message: "User has no token!!" });
+            return $q.reject({ message: "User has no token!!" });
         }
-
-    }
+    };
 
     return authFactory;
-
 });
 
-//factory that manage token
+
+//a service for manage a token ( get or set new token )
 authService.factory("AuthToken", function ($window) {
 
     var authFactory = {};
 
-    //for store token of the user that is logged
+    authFactory.getToken = function () {
+        return $window.localStorage.getItem("token");
+    };
+
     authFactory.setToken = function (token) {
 
         if (token) {
-            $window.localStorage.setitem("token", token);
+            $window.localStorage.setItem("token", token);
         } else {
             $window.localStorage.removeItem("token");
         }
     };
 
-    //for get user's token
-    authFactory.getToken = function () {
+    return authFactory;
+});
 
-        return $window.localStorage.getItem("token");
+
+authService.factory("AuthInterceptor", function ($q, $location, AuthToken) {
+
+    var interceptorFactory = {};
+
+    interceptorFactory.request = function (config) {
+        var token = AuthToken.getToken();
+
+        if (token) {
+            config.headers["z-access-token"] = token;
+        }
+        return config;
     };
 
-    return authFactory;
+    interceptorFactory.responseErro = function (response) {
 
+        if (response.status == 401) {
+
+            $location.path("/login");
+        }
+
+        return $q.reject(response);
+    }
+
+    return interceptorFactory;
 })

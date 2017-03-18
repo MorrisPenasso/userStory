@@ -1,42 +1,48 @@
+//import nodejs libraries
+
 var express = require("express");
 var bodyParser = require("body-parser");
-var mongo = require("mongoose");
-
+var morgan = require("morgan");
 var config = require("./config");
-
+var mongo = require("mongoose");
 var app = new express();
-app.use(bodyParser.json());
 
-//connection with mongodb
+//connect at database
 mongo.connect(config.database, function (err) {
-
     if (err) {
-        throw err;
-    } else {
-        console.log("Database connected!!");
+        console.log(err);
     }
-
-});
-
-//for send html file 
-app.get("/", function (req, res) {
-
-    res.sendFile(__dirname + "/public/app/views/index.html");
-});
-
-app.use(express.static(__dirname + "/public"));
-
-var api = require("./routes/api")(express);
-
-app.use("/api", api)
-
-
-app.listen(config.port, function (err) {
-
-    if (err) {
-        throw err;
-    } else {
-        console.log("Server started!");
+    else {
+        console.log("Connected to the database");
     }
-
 });
+
+    //use middleweare functions
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.json());
+    app.use(morgan("dev"));
+
+    //call external module and pass express instance (app) and library
+    var api = require("./app/routes/api")(app, express);
+
+    //middleware function that when user call "/" URL , call api variable that contain an external module
+    app.use("/api", api);
+
+    //for all url request arrived from the client, load entire folder
+    app.use(express.static(__dirname + "/public"));
+
+    //send a specific file
+    app.get("*", function (req, res) {
+
+        res.sendFile(__dirname + "/public/app/views/index.html");
+
+    });
+
+    app.listen(config.port, function (err) {
+        if (err) {
+            throw err;
+        }
+        else {
+            console.log("Listening on port: " + config.port);
+        }
+    })

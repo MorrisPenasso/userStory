@@ -1,0 +1,22 @@
+﻿<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <div class="container" ng-controller="mainController">
+        <div class="row">
+            <div class="col-sm-6 col-md-4 col-md-offset-4">
+                <h1>Login</h1>
+                <form method="post" class="form-sigin" ng-submit="doLogin()">
+                    Username: <input type="text" class="form-control" name="username" ng-model="loginData.username" />
+                    Password: <input type="password" class="form-control" name="password" ng-model="loginData.password" />
+
+                    <button type="submit" class="btn btn-success">Login</button>
+                </form>
+
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

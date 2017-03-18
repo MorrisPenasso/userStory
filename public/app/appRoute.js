@@ -1,4 +1,4 @@
-var myApp = angular.module("myApp", ["ngRoute"]);
+var myApp = angular.module("appRoutes", ["ngRoute"]);
 
 //module initial configuration for the route system
 myApp.config(function ($routeProvider) {
