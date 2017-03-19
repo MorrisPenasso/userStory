@@ -16,7 +16,16 @@ appRoutes.config(function ($routeProvider, $locationProvider) {
 
             templateUrl: "/app/views/pages/signup.html"
         })
+        .when("/allStories", {
 
+            templateUrl: "/app/views/pages/allStories.html",
+            controller: "AllStoriesCtrl",
+            resolve: {
+                stories: function (story) {
+                    return Story.allStories();
+                }
+            }
+        })
     .otherwise({ redirectTo: "/" });
 
     $locationProvider.html5Mode({

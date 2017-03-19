@@ -35,7 +35,16 @@ module.exports = function (express, io) {
             }
         })
     })
-
+    api.get("/all_stories", function (req, res) {
+        Story.find({}, function (err, stories) {
+            if (err) {
+                res.send(err);
+                return
+            } else {
+                res.json(stories);
+            }
+        });
+    });
 
     //for insert a new user into database 
     //localhost:8080/api/signup
@@ -71,7 +80,7 @@ module.exports = function (express, io) {
             if (!usernameFinded) {
                 res.send("This user does not exist!!");
             } else {
-                
+
                 //compare password received from the client with password hashed stored into document
                 var validPassword = usernameFinded.comparePassword(req.body.password);
 
@@ -115,8 +124,6 @@ module.exports = function (express, io) {
     //for store into database a new story document of user id that arrived from token that has been decoded
     //only token encrypt the username credential when he logged in
     api.route("/")
-    
-    
     .post(function (req, res) {
 
         var story = new Story({
@@ -137,18 +144,18 @@ module.exports = function (express, io) {
     })
 
     //for get all stories on the database
-   .get("/", function (req, res) {
+   .get(function (req, res) {
 
-        Story.find(function (err, stories) {
+       Story.find({ creator: req.decoded.id }, function (err, stories) {
 
-            if (err) {
-                throw err;
-                
-            } else {
-                res.send(stories);
-            }
-        })
-    })
+           if (err) {
+               throw err;
+
+           } else {
+               res.send(stories);
+           }
+       })
+   })
 
     //get only credentials of the current user
     .get("/me", function (req, res) {

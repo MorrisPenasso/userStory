@@ -5,6 +5,9 @@ storyService.factory("Story", function ($http) {
 
     var storyFactory = {};
 
+    storyFactory.allStories = function () {
+        return $http.get("/api/all_stories");
+    }
 
     storyFactory.createStory = function (storyData) {
 
