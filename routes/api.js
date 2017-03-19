@@ -7,7 +7,7 @@ var jsonWebToken = require("jsonWebToken");
 
 var secretKey = config.secretKey;
 
-module.exports = function (express) {
+module.exports = function (express, io) {
 
     function createToken(user) {
 
@@ -114,7 +114,10 @@ module.exports = function (express) {
 
     //for store into database a new story document of user id that arrived from token that has been decoded
     //only token encrypt the username credential when he logged in
-    api.post("/", function (req, res) {
+    api.route("/")
+    
+    
+    .post(function (req, res) {
 
         var story = new Story({
 
@@ -123,17 +126,18 @@ module.exports = function (express) {
 
         });
 
-        story.save(function (err) {
+        story.save(function (err, newStory) {
             if (err) {
                 throw err;
             } else {
+                io.emit("story", newStory);
                 res.send("Story created!!");
             }
         })
-    });
+    })
 
     //for get all stories on the database
-    api.get("/", function (req, res) {
+   .get("/", function (req, res) {
 
         Story.find(function (err, stories) {
 
@@ -147,7 +151,7 @@ module.exports = function (express) {
     })
 
     //get only credentials of the current user
-    api.get("/me", function (req, res) {
+    .get("/me", function (req, res) {
 
         res.json(req.decoded);
     });

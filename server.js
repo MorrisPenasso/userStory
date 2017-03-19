@@ -7,6 +7,10 @@ var config = require("./config");
 var mongo = require("mongoose");
 var app = new express();
 
+var http = require("http").Server(app);
+
+var io = require("socket.io")(http);
+
 //connect at database
 mongo.connect(config.database, function (err) {
     if (err) {
@@ -23,7 +27,7 @@ mongo.connect(config.database, function (err) {
     app.use(morgan("dev"));
 
     //call external module and pass express instance (app) and library
-    var api = require("./app/routes/api")(app, express);
+    var api = require("./app/routes/api")(app, express, io);
 
     //middleware function that when user call "/" URL , call api variable that contain an external module
     app.use("/api", api);
@@ -38,7 +42,7 @@ mongo.connect(config.database, function (err) {
 
     });
 
-    app.listen(config.port, function (err) {
+    http.listen(config.port, function (err) {
         if (err) {
             throw err;
         }

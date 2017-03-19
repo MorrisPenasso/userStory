@@ -1,6 +1,6 @@
 var storyCtrl = angular.module("storyCtrl", ["storyService"]);
 
-storyCtrl.controller("StoryController", function($scope, Story)  {
+storyCtrl.controller("StoryController", function ($scope, Story, socketio) {
 
     Story.allStory().then(function(data)    {
     
@@ -24,4 +24,7 @@ storyCtrl.controller("StoryController", function($scope, Story)  {
 
     };
 
+    socketio.on("story", function(data)    {
+        $scope.stories.push(data);
+})
 });
