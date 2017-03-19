@@ -5,7 +5,8 @@ appRoutes.config(function ($routeProvider, $locationProvider) {
 
     $routeProvider.when("/", {
 
-        templateUrl: "/app/views/pages/home.html"
+        templateUrl: "/app/views/pages/home.html",
+        controller: "mainController"
     })
         .when("/login", {
 
